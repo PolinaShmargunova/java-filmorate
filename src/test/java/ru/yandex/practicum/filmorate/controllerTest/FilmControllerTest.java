@@ -49,7 +49,6 @@ class FilmControllerTest {
                 .releaseDate(LocalDate.of(2020, 10, 12))
                 .duration(130)
                 .build();
-
         filmController.addFilm(film);
         filmController.updateFilm(film2);
         List<Film> filmList = new ArrayList<>();
