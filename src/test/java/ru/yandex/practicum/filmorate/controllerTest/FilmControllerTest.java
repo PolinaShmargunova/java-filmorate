@@ -80,8 +80,8 @@ class FilmControllerTest {
                 .duration(130)
                 .build();
 
-        ValidationException exception = assertThrows(ValidationException.class, () -> filmController.addFilm(film2));
-        assertEquals(exception.getMessage(), exception.getMessage());
+        ValidationException validationException = assertThrows(ValidationException.class, () -> filmController.addFilm(film2));
+        assertEquals(validationException.getMessage(), validationException.getMessage());
         assertEquals(0, filmController.findAllFilms().size());
     }
 
@@ -90,15 +90,18 @@ class FilmControllerTest {
         Film film2 = Film.builder()
                 .id(2)
                 .name("Film2Name")
-                .description(TOO_LONG_DESCRIPTION)
+                .description("В этом описании более 200 символов. " +
+                        "Объект с полем film.description не пройдет валидацию контроллера. В поле необходимо указать описание " +
+                        " фильма, не превышающим количество символов, равное 200. В противном случае описание невозможно сохранить")
                 .releaseDate(LocalDate.of(2020, 10, 12))
                 .duration(130)
                 .build();
 
-        ValidationException exception = assertThrows(ValidationException.class, () -> filmController.addFilm(film2));
-        assertEquals(exception.getMessage(), exception.getMessage());
+        ValidationException validationException = assertThrows(ValidationException.class, () -> filmController.addFilm(film2));
+        assertEquals(validationException.getMessage(), validationException.getMessage());
         assertEquals(0, filmController.findAllFilms().size());
     }
+
 
     @Test
     void shouldThrowExceptionThenAddTooEarlierDateRelease() {

@@ -20,8 +20,8 @@ public class FilmValidator {
     public static final int MAX_LENGTH_OF_DESCRIPTION = 200;
 
     public static final String TOO_LONG_DESCRIPTION = "В этом описании более 200 символов. " +
-            "объекта с полем film.description не пройдет валидацию контроллера. В поле необходимо указать описание " +
-            "фильма, не превышающим количество символов, равное 200.";
+            "Объект с полем film.description не пройдет валидацию контроллера. В поле необходимо указать описание " +
+            " фильма, не превышающим количество символов, равное 200. В противном случае описание невозможно сохранить";
     private final Map<Integer, Film> films;
     private static final AtomicInteger id = new AtomicInteger(0);
 
