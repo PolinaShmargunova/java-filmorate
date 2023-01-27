@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,7 +21,7 @@ class FilmControllerTest {
 
     @BeforeEach
     void beforeEach() {
-        filmController = new FilmController(new FilmService(new HashMap<>()));
+        filmController = new FilmController(new FilmService());
         film = Film.builder()
                 .id(1)
                 .name("FilmName")
@@ -79,7 +78,8 @@ class FilmControllerTest {
                 .build();
 
         ValidationException exception = assertThrows(ValidationException.class, () -> filmController.addFilm(film2));
-        assertEquals(exception.getMessage(), exception.getMessage());
+        String expectedMessage = "Название фильма не может быть пустым.";
+        assertEquals(exception.getMessage(), expectedMessage);
         assertEquals(0, filmController.findAllFilms().size());
     }
 
@@ -96,7 +96,8 @@ class FilmControllerTest {
                 .build();
 
         ValidationException exception = assertThrows(ValidationException.class, () -> filmController.addFilm(film2));
-        assertEquals(exception.getMessage(), exception.getMessage());
+        String expectedMessage = "Описание фильма не может превышать 200 символов.";
+        assertEquals(exception.getMessage(), expectedMessage);
         assertEquals(0, filmController.findAllFilms().size());
     }
 
@@ -111,7 +112,8 @@ class FilmControllerTest {
                 .build();
 
         ValidationException exception = assertThrows(ValidationException.class, () -> filmController.addFilm(film2));
-        assertEquals(exception.getMessage(), exception.getMessage());
+        String expectedMessage = "Дата релиза должна быть не раньше 28.12.1895 (первый фильм в истории).";
+        assertEquals(exception.getMessage(), expectedMessage);
         assertEquals(0, filmController.findAllFilms().size());
     }
 
@@ -126,7 +128,8 @@ class FilmControllerTest {
                 .build();
 
         ValidationException exception = assertThrows(ValidationException.class, () -> filmController.addFilm(film2));
-        assertEquals(exception.getMessage(), exception.getMessage());
+        String expectedMessage = "Продолжительность фильма не может быть меньше нуля или равняться нулю.";
+        assertEquals(exception.getMessage(), expectedMessage);
         assertEquals(0, filmController.findAllFilms().size());
     }
 }

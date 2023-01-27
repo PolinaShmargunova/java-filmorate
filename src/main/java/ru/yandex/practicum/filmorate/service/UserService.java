@@ -1,12 +1,12 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,18 +14,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class UserService {
     private final Map<Integer, User> users = new HashMap<>();
     private static final AtomicInteger id = new AtomicInteger(0);
 
-    public UserService(HashMap<Object, Object> objectHashMap) {
-
-    }
-
     public Collection<User> findAllUsers() {
         log.debug("Успешно возвращена коллекция пользователей.");
-        return users.values();
+        return new ArrayList<>(users.values());
     }
 
     public User createUser(User user) {

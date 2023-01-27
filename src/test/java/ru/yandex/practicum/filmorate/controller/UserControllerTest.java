@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,7 +20,7 @@ class UserControllerTest {
 
     @BeforeEach
     void beforeEach() {
-        userController = new UserController(new UserService(new HashMap<>()));
+        userController = new UserController(new UserService());
         user = User.builder()
                 .id(1)
                 .email("test@test.com")
@@ -64,7 +63,8 @@ class UserControllerTest {
                 .build();
 
         ValidationException exception = assertThrows(ValidationException.class, () -> userController.createUser(user2));
-        assertEquals(exception.getMessage(), exception.getMessage());
+        String expectedMessage = "Адрес электронной почты не может быть пустым.";
+        assertEquals(exception.getMessage(), expectedMessage);
     }
 
     @Test
@@ -78,7 +78,8 @@ class UserControllerTest {
                 .build();
 
         ValidationException exception = assertThrows(ValidationException.class, () -> userController.createUser(user2));
-        assertEquals(exception.getMessage(), exception.getMessage());
+        String expectedMessage = "Адрес электронной почты должен содержать символ @.";
+        assertEquals(exception.getMessage(), expectedMessage);
     }
 
     @Test
@@ -92,7 +93,8 @@ class UserControllerTest {
                 .build();
 
         ValidationException exception = assertThrows(ValidationException.class, () -> userController.createUser(user2));
-        assertEquals(exception.getMessage(), exception.getMessage());
+        String expectedMessage = "Логин не может быть пустым.";
+        assertEquals(exception.getMessage(), expectedMessage);
     }
 
     @Test
@@ -106,7 +108,8 @@ class UserControllerTest {
                 .build();
 
         ValidationException exception = assertThrows(ValidationException.class, () -> userController.createUser(user2));
-        assertEquals(exception.getMessage(), exception.getMessage());
+        String expectedMessage = "Логин не может содержать пробелы.";
+        assertEquals(exception.getMessage(), expectedMessage);
     }
 
     @Test
@@ -120,7 +123,8 @@ class UserControllerTest {
                 .build();
 
         ValidationException exception = assertThrows(ValidationException.class, () -> userController.createUser(user2));
-        assertEquals(exception.getMessage(), exception.getMessage());
+        String expectedMessage = "Дата рождения не может быть в будущем.";
+        assertEquals(exception.getMessage(), expectedMessage);
     }
 
     @Test

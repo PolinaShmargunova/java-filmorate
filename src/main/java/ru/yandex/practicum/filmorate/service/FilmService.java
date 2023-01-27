@@ -1,20 +1,20 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class FilmService {
-    private final Map<Integer, Film> films;
+    private final Map<Integer, Film> films = new HashMap<>();
     private static final AtomicInteger id = new AtomicInteger(0);
 
     public Film addFilm(Film film) {
@@ -27,10 +27,10 @@ public class FilmService {
 
     public Collection<Film> findAllFilms() {
         log.debug("Успешно возвращена коллекция фильмов.");
-        return films.values();
+        return new ArrayList<>(films.values());
     }
 
-    public Film updateFilm(Film film) throws RuntimeException {
+    public Film updateFilm(Film film) throws ValidationException {
         validateFilm(film);
         if (!films.containsKey(film.getId())) {
             throw new ValidationException("Фильм с id=" + film.getId() + " не найден.");
