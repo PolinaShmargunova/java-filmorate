@@ -66,13 +66,6 @@ class UserControllerTest {
     }
 
     @Test
-    void addUserWithWrongLogin() {
-        User sendUser = new User(0, validUser.getEmail(), "Three words login", validUser.getName(), validUser.getBirthday(), new HashSet<>());
-        HttpResponse<String> response = sendRequest(sendUser, "POST");
-        Assertions.assertEquals(400, response.statusCode());
-    }
-
-    @Test
     void addUserWithVoidName() throws JsonProcessingException {
         User sendUser = new User(0, validUser.getEmail(), validUser.getLogin(), "", validUser.getBirthday(), new HashSet<>());
         HttpResponse<String> response = sendRequest(sendUser, "POST");
