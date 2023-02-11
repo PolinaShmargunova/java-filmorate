@@ -73,6 +73,16 @@ class FilmControllerTest {
     }
 
     @Test
+    void validFilmUpdate() throws JsonProcessingException {
+        HttpResponse<String> response = sendRequest(validFilm, "POST");
+        Film tmpFilm = mapper.readValue(response.body(), Film.class);
+        Film updatedFilm = new Film(0, "newName", "newDescription", "2020-01-02", 111, new HashSet<>());
+        updatedFilm = updatedFilm.withId(tmpFilm.getId());
+        response = sendRequest(updatedFilm, "PUT");
+        Assertions.assertEquals(200, response.statusCode());
+    }
+
+    @Test
     void updateWithVoidName() throws JsonProcessingException {
         HttpResponse<String> response = sendRequest(validFilm, "POST");
         Film tmpFilm = mapper.readValue(response.body(), Film.class);
