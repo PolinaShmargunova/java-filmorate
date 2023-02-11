@@ -83,14 +83,6 @@ public class FilmService {
         return filmStorage.getFilms();
     }
 
-    public void removeFilm(int id) {
-        if (filmStorage.getFilmById(id) != null) {
-            filmStorage.removeFilm(id);
-        } else {
-            throw new NotFoundException("Фильм с id=" + id + " не найден");
-        }
-    }
-
     private boolean isFilmDataErrors(Film film) {
         LocalDate releaseDate = LocalDate.parse(film.getReleaseDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         return releaseDate.isBefore(LocalDate.of(1895, 12, 28));

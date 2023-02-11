@@ -64,13 +64,12 @@ public class UserService {
         User firstUser = getUserById(id);
         User secondUser = getUserById(friendId);
         if (firstUser == null || secondUser == null) {
-            return new ArrayList<>();
+            return List.of();
         }
         Set<Integer> firstUserFriends = firstUser.getFriendsIds();
         Set<Integer> secondUserFriends = secondUser.getFriendsIds();
-        Set<Integer> mutual = new HashSet<>(firstUserFriends);
-        mutual.retainAll(secondUserFriends);
-        return mutual.stream().map(this::getUserById).collect(Collectors.toList());
+        firstUserFriends.retainAll(secondUserFriends);
+        return firstUserFriends.stream().map(this::getUserById).collect(Collectors.toList());
     }
 
     public User getUserById(int id) {
@@ -120,16 +119,8 @@ public class UserService {
         return userStorage.getUsers();
     }
 
-    public void removeUser(int id) {
-        if (userStorage.getUserById(id) != null) {
-            userStorage.removeUser(id);
-        } else {
-            throw new NotFoundException("Пользователь с id=" + id + " не найден");
-        }
-    }
-
     private boolean isUserDataErrors(User user) {
-        boolean isLoginErrors = user.getLogin().contains(" ");
+        boolean isLoginErrors = Boolean.parseBoolean(user.getLogin());
         LocalDate birthday = LocalDate.parse(user.getBirthday(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         boolean isBirthdayErrors = birthday.isAfter(LocalDate.now());
         return isLoginErrors || isBirthdayErrors;
