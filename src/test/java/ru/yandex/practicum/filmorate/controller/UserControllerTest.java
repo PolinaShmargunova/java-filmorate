@@ -69,7 +69,7 @@ class UserControllerTest {
     void addUserWithWrongLogin() {
         User sendUser = new User(0, validUser.getEmail(), "Three words login", validUser.getName(), validUser.getBirthday(), new HashSet<>());
         HttpResponse<String> response = sendRequest(sendUser, "POST");
-        Assertions.assertEquals(200, response.statusCode());
+        Assertions.assertEquals(400, response.statusCode());
     }
 
     @Test

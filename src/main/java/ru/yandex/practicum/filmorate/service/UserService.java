@@ -68,8 +68,9 @@ public class UserService {
         }
         Set<Integer> firstUserFriends = firstUser.getFriendsIds();
         Set<Integer> secondUserFriends = secondUser.getFriendsIds();
-        firstUserFriends.retainAll(secondUserFriends);
-        return firstUserFriends.stream().map(this::getUserById).collect(Collectors.toList());
+        Set<Integer> mutual = new HashSet<>(firstUserFriends);
+        mutual.retainAll(secondUserFriends);
+        return mutual.stream().map(this::getUserById).collect(Collectors.toList());
     }
 
     public User getUserById(int id) {
