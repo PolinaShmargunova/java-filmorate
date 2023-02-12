@@ -11,7 +11,6 @@ import ru.yandex.practicum.filmorate.storages.UserStorage;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -83,9 +82,6 @@ public class UserService {
 
     public List<User> getFriends(int id) {
         User user = userStorage.getUserById(id);
-        if (user == null) {
-            throw new NotFoundException("Пользователь с id=" + id + " не найден");
-        }
         return user.getFriendsIds().stream().map(this::getUserById).collect(Collectors.toList());
     }
 
