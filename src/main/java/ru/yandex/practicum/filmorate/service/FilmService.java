@@ -23,9 +23,6 @@ public class FilmService {
     public void addLike(int filmId, int userId) {
         Film film = filmStorage.getFilmById(filmId);
         User user = userStorage.getUserById(userId);
-        if (film == null) {
-            throw new NotFoundException("Фильм с id=" + filmId + " не найден");
-        }
         if (user == null) {
             throw new NotFoundException("Пользователь с id=" + userId + " не найден");
         }
@@ -38,9 +35,6 @@ public class FilmService {
     public void removeLike(int filmId, int userId) {
         Film film = filmStorage.getFilmById(filmId);
         User user = userStorage.getUserById(userId);
-        if (film == null) {
-            throw new NotFoundException("Фильм с id=" + filmId + " не найден");
-        }
         if (user == null) {
             throw new NotFoundException("Пользователь с id=" + userId + " не найден");
         }

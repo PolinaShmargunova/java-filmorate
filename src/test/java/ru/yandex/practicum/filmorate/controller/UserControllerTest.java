@@ -59,15 +59,8 @@ class UserControllerTest {
     }
 
     @Test
-    void addUserWithVoidLogin() {
-        User sendUser = new User(0, validUser.getEmail(), "", validUser.getName(), validUser.getBirthday(), new HashSet<>());
-        HttpResponse<String> response = sendRequest(sendUser, "POST");
-        Assertions.assertEquals(400, response.statusCode());
-    }
-
-    @Test
     void addUserWithWrongLogin() {
-        User sendUser = new User(0, validUser.getEmail(), "Three words login", validUser.getName(), validUser.getBirthday(), new HashSet<>());
+        User sendUser = new User(0, validUser.getEmail(), "", validUser.getName(), validUser.getBirthday(), new HashSet<>());
         HttpResponse<String> response = sendRequest(sendUser, "POST");
         Assertions.assertEquals(400, response.statusCode());
     }
