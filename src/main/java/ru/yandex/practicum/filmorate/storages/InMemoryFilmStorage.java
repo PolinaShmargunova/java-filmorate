@@ -4,61 +4,36 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
-    private static final Comparator<Film> filmComparator = Comparator
-            .comparing(Film::getLikesCount, Comparator.reverseOrder())
-            .thenComparing(Film::getId);
-    private final Map<Integer, Film> filmsById = new HashMap<>();
-
-    private int id = 0;
+    private final List<Film> films = new ArrayList<>();
 
     @Override
-    public Film addFilm(Film film) {
-        film = film.withId(++id);
-        film = film.withLikedUsersIds(new HashSet<>());
-        filmsById.put(id, film);
+    public List<Film> findAll() {
+        return films;
+    }
+
+    @Override
+    public Film findById(Long id) {
+        Film flm = films.stream().filter(film -> film.getId() == id).findFirst().orElse(null);
+        if (flm == null) throw new NotFoundException("Film not found");
+        return flm;
+    }
+
+    @Override
+    public Film insert(Film film) {
+        film.setId(++Film.newId);
+        films.add(film);
         return film;
     }
 
     @Override
-    public void removeFilm(int id) {
-        filmsById.remove(id);
-    }
-
-    @Override
-    public Film updateFilm(Film film) {
-        if (film.getLikedUsersIds() == null) {
-            film = film.withLikedUsersIds(new HashSet<>());
-        }
-        filmsById.put(film.getId(), film);
+    public Film update(Film film) {
+        films.remove(this.findById(film.getId()));
+        films.add(film);
         return film;
-    }
-
-    @Override
-    public Film getFilmById(int id) {
-        Film film = filmsById.get(id);
-        if (film == null) {
-            throw new NotFoundException("Фильм с id=" + id + " не найден");
-        }
-        return film;
-    }
-
-    @Override
-    public List<Film> getFilms() {
-        return new ArrayList<>(filmsById.values());
-    }
-
-    @Override
-    public List<Film> getMostPopularFilms(int count) {
-        return filmsById
-                .values()
-                .stream()
-                .sorted(filmComparator)
-                .limit(count)
-                .collect(Collectors.toList());
     }
 }

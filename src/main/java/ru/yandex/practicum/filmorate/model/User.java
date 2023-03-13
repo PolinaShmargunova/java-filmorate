@@ -1,33 +1,18 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.With;
+import lombok.Data;
 
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-
+import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+@Data
 public class User {
-    @With
-    @DecimalMin("0")
-    int id;
-    @Email
-    @NotBlank
-    String email;
-    @NotBlank
-    String login;
-    @With
-    String name;
-    String birthday;
-    @With
-    Set<Integer> friendsIds;
+    public static int newId = 0;
+    private long id;
+    private String email;
+    private String login;
+    private String name;
+    private LocalDate birthday;
+    private Set<Long> friends = new HashSet<>();
 }
