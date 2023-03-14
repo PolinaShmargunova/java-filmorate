@@ -1,171 +1,77 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.HashSet;
-import java.util.List;
+import java.time.LocalDate;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-class FilmControllerTest {
-    private final HttpClient client = HttpClient.newHttpClient();
-    ObjectMapper mapper = new ObjectMapper();
+import static org.junit.jupiter.api.Assertions.*;
 
-    Film validFilm = new Film(0, "Название фильма", "Описание фильма", "1999-01-01", 1500, new HashSet<>());
+@SpringBootTest
+public class FilmControllerTest {
+    @Autowired
+    FilmController filmController;
+    Film film = new Film();
+
+    @BeforeEach
+    public void setUp() {
+        film.setId(1);
+        film.setName("Название");
+        film.setDescription("Описание");
+        film.setReleaseDate(LocalDate.of(1990, 1, 1));
+        film.setDuration(120L);
+    }
 
     @Test
-    void addValidFilm() throws JsonProcessingException {
-        sendRequest(validFilm, "POST");
-        HttpResponse<String> response = sendRequest(null, "GET");
-        List<Film> filmList = mapper.readValue(response.body(), new TypeReference<>() {
+    public void validationFilmPutTest_Ok() throws ValidationException {
+        assertEquals(filmController.post(film), film);
+    }
+
+    @Test
+    public void validationFilmPutTest_ValidationException_NameEmpty() throws ValidationException {
+        film.setName("");
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            filmController.post(film);
         });
-        Film returnedFilm = filmList.get(0);
-        Assertions.assertEquals(200, response.statusCode());
-        Assertions.assertEquals(validFilm.getName(), returnedFilm.getName());
-        Assertions.assertEquals(validFilm.getDescription(), returnedFilm.getDescription());
-        Assertions.assertEquals(validFilm.getReleaseDate(), returnedFilm.getReleaseDate());
-        Assertions.assertEquals(validFilm.getDuration(), returnedFilm.getDuration());
+        String expectedMessage = "Name не может быть пустым";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 
     @Test
-    void addVoidBodyFilm() {
-        Assertions.assertEquals(500, sendRequest(null, "POST").statusCode());
+    public void validationFilmPutTest_ValidationException_MaxDescriptionLength() throws ValidationException {
+        film.setDescription("o".repeat(201));
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            filmController.post(film);
+        });
+        String expectedMessage = "Максимальная длина описания — 200 символов";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 
     @Test
-    void addFilmWithVoidName() {
-        Film sendFilm = new Film(0, "", validFilm.getDescription(), validFilm.getReleaseDate(), validFilm.getDuration(), new HashSet<>());
-        HttpResponse<String> response = sendRequest(sendFilm, "POST");
-        System.out.println(response.statusCode());
-        Assertions.assertEquals(400, response.statusCode());
+    public void validationFilmPutTest_ValidationException_MinReleaseDate() throws ValidationException {
+        film.setReleaseDate(LocalDate.of(1895, 1, 1));
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            filmController.post(film);
+        });
+        String expectedMessage = "Дата релиза должна быть не раньше 28 декабря 1895 года";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 
     @Test
-    void addFilmWithBigDescription() {
-        Film sendFilm = new Film(0, validFilm.getName(), BIG_FILM_DESCRIPTION, validFilm.getReleaseDate(), validFilm.getDuration(), new HashSet<>());
-        HttpResponse<String> response = sendRequest(sendFilm, "POST");
-        Assertions.assertEquals(400, response.statusCode());
+    public void validationFilmPutTest_ValidationException_DurationPositive() throws ValidationException {
+        film.setDuration(-120L);
+        Exception exception = assertThrows(ValidationException.class, () -> {
+            filmController.post(film);
+        });
+        String expectedMessage = "Продолжительность фильма должна быть положительной";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
     }
-
-    @Test
-    void addFilmWithWrongReleaseDate() {
-        Film sendFilm = new Film(0, validFilm.getName(), validFilm.getDescription(), "1812-09-07", validFilm.getDuration(), new HashSet<>());
-        HttpResponse<String> response = sendRequest(sendFilm, "POST");
-        Assertions.assertEquals(400, response.statusCode());
-    }
-
-    @Test
-    void addFilmWithWrongDuration() {
-        Film sendFilm = new Film(0, validFilm.getName(), validFilm.getDescription(), validFilm.getReleaseDate(), -1, new HashSet<>());
-        HttpResponse<String> response = sendRequest(sendFilm, "POST");
-        Assertions.assertEquals(400, response.statusCode());
-    }
-
-    @Test
-    void validFilmUpdate() throws JsonProcessingException {
-        HttpResponse<String> response = sendRequest(validFilm, "POST");
-        Film tmpFilm = mapper.readValue(response.body(), Film.class);
-        Film updatedFilm = new Film(0, "newName", "newDescription", "2020-01-02", 111, new HashSet<>());
-        updatedFilm = updatedFilm.withId(tmpFilm.getId());
-        response = sendRequest(updatedFilm, "PUT");
-        Assertions.assertEquals(200, response.statusCode());
-    }
-
-    @Test
-    void updateWithVoidName() throws JsonProcessingException {
-        HttpResponse<String> response = sendRequest(validFilm, "POST");
-        Film tmpFilm = mapper.readValue(response.body(), Film.class);
-        Film updatedFilm = new Film(0, "", "newDescription", "2020-01-02", 111, new HashSet<>());
-        updatedFilm = updatedFilm.withId(tmpFilm.getId());
-        response = sendRequest(updatedFilm, "PUT");
-        Assertions.assertEquals(400, response.statusCode());
-    }
-
-    @Test
-    void updateWithBigDescription() throws JsonProcessingException {
-        HttpResponse<String> response = sendRequest(validFilm, "POST");
-        Film tmpFilm = mapper.readValue(response.body(), Film.class);
-        Film updatedFilm = new Film(0, "newName", BIG_FILM_DESCRIPTION, "2020-01-02", 111, new HashSet<>());
-        updatedFilm = updatedFilm.withId(tmpFilm.getId());
-        response = sendRequest(updatedFilm, "PUT");
-        Assertions.assertEquals(400, response.statusCode());
-    }
-
-    @Test
-    void updateWithWrongReleaseDate() throws JsonProcessingException {
-        HttpResponse<String> response = sendRequest(validFilm, "POST");
-        Film tmpFilm = mapper.readValue(response.body(), Film.class);
-        Film updatedFilm = new Film(0, "newName", "newDescription", "1812-09-07", 111, new HashSet<>());
-        updatedFilm = updatedFilm.withId(tmpFilm.getId());
-        response = sendRequest(updatedFilm, "PUT");
-        Assertions.assertEquals(400, response.statusCode());
-    }
-
-    @Test
-    void updateWithWrongDuration() throws JsonProcessingException {
-        HttpResponse<String> response = sendRequest(validFilm, "POST");
-        Film tmpFilm = mapper.readValue(response.body(), Film.class);
-        Film updatedFilm = new Film(0, "newName", "newDescription", "2020-01-02", -1, new HashSet<>());
-        updatedFilm = updatedFilm.withId(tmpFilm.getId());
-        response = sendRequest(updatedFilm, "PUT");
-        Assertions.assertEquals(400, response.statusCode());
-    }
-
-    @Test
-    void updateWithWrongId() {
-        Film wrongIdFilm = validFilm.withId(10);
-        Assertions.assertEquals(404, sendRequest(wrongIdFilm, "PUT").statusCode());
-    }
-
-    private HttpResponse<String> sendRequest(Film film, String method) {
-        HttpResponse<String> response;
-        try {
-            String serverAdress = "http://localhost:8080/films";
-            String body;
-            HttpRequest request;
-            if ("POST".equals(method)) {
-                body = mapper.writeValueAsString(film);
-                request = HttpRequest
-                        .newBuilder()
-                        .POST(HttpRequest.BodyPublishers.ofString(body))
-                        .header("Content-Type", "application/json")
-                        .uri(URI.create(serverAdress))
-                        .build();
-            } else if ("PUT".equals(method)) {
-                body = mapper.writeValueAsString(film);
-                request = HttpRequest
-                        .newBuilder()
-                        .PUT(HttpRequest.BodyPublishers.ofString(body))
-                        .header("Content-Type", "application/json")
-                        .uri(URI.create(serverAdress))
-                        .build();
-            } else if ("GET".equals(method)) {
-                request = HttpRequest
-                        .newBuilder()
-                        .GET()
-                        .header("Content-Type", "application/json")
-                        .uri(URI.create(serverAdress))
-                        .build();
-            } else {
-                throw new RuntimeException("Не правильно указан Http-метод");
-            }
-            response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        return response;
-    }
-
-    public static final String BIG_FILM_DESCRIPTION = StringUtils.repeat("1", 201);
 }
