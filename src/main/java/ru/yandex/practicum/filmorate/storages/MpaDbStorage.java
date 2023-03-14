@@ -18,7 +18,7 @@ import java.sql.Statement;
 import java.util.List;
 
 @Slf4j
-@Component("MpaDbStorage")
+@Component
 @AllArgsConstructor
 public class MpaDbStorage implements MpaStorage {
 
@@ -42,7 +42,7 @@ public class MpaDbStorage implements MpaStorage {
     @Override
     public Mpa findById(Long id) {
         try {
-            return jdbcTemplate.queryForObject("SELECT id, name FROM MPA WHERE id=?", new Object[]{id}, rowMapper);
+            return jdbcTemplate.queryForObject("SELECT id, name FROM MPA WHERE id=?", rowMapper, new Object[]{id});
         } catch (DataAccessException e) {
             throw new NotFoundException("Mpa not found");
         }

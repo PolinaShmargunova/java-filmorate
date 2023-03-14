@@ -22,14 +22,12 @@ public class GenreController {
     private final GenreService genreService;
 
     @GetMapping
-    @ResponseBody
     public List<Genre> getAll() {
         log.info("/genres get all");
         return genreService.getAll();
     }
 
     @GetMapping("/{id}")
-    @ResponseBody
     public Genre get(@PathVariable Long id) {
         log.info("/genres get by id");
         return genreService.getById(id);

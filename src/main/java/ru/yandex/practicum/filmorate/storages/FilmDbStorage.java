@@ -26,7 +26,7 @@ import java.util.TreeSet;
 
 @Slf4j
 @Primary
-@Component("FilmDbStorage")
+@Component
 @AllArgsConstructor
 public class FilmDbStorage implements FilmStorage {
 
@@ -64,7 +64,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film findById(Long id) {
         try {
-            return jdbcTemplate.queryForObject("SELECT * FROM FILMS WHERE id=?", new Object[]{id}, rowMapper);
+            return jdbcTemplate.queryForObject("SELECT * FROM FILMS WHERE id=?", rowMapper, new Object[]{id});
         } catch (DataAccessException e) {
             throw new NotFoundException("Film not found");
         }

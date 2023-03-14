@@ -21,14 +21,12 @@ public class MpaController {
     private final MpaService mpaService;
 
     @GetMapping
-    @ResponseBody
     public List<Mpa> getAll() {
         log.info("/mpa get all");
         return mpaService.getAll();
     }
 
     @GetMapping("/{id}")
-    @ResponseBody
     public Mpa get(@PathVariable Long id) {
         log.info("/mpa get by id");
         return mpaService.getById(id);

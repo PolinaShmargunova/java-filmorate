@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 
@@ -19,28 +20,24 @@ public class FilmController {
     private final FilmService filmService;
 
     @GetMapping
-    @ResponseBody
     public List<Film> getAll() {
         log.info("/films get all");
         return filmService.getAll();
     }
 
     @GetMapping("/{id}")
-    @ResponseBody
     public Film get(@PathVariable Long id) {
         log.info("/films get by id");
         return filmService.getById(id);
     }
 
     @PostMapping
-    @ResponseBody
-    public Film post(@RequestBody Film film) {
+    public Film post( @RequestBody Film film) {
         log.info("/films post");
         return filmService.add(film);
     }
 
     @PutMapping
-    @ResponseBody
     public Film put(@RequestBody Film film) {
         log.info("/films patch");
         return filmService.update(film);
@@ -61,7 +58,6 @@ public class FilmController {
     }
 
     @GetMapping(value = "/popular")
-    @ResponseBody
     public List<Film> getTop(@RequestParam(defaultValue = "10") Integer count) {
         log.info("/films get top");
         return filmService.getTopNFilms(count);

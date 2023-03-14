@@ -19,28 +19,24 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    @ResponseBody
     public List<User> getAll() {
         log.info("/users get all");
         return userService.getAll();
     }
 
     @GetMapping("/{id}")
-    @ResponseBody
     public User get(@PathVariable Long id) {
         log.info("/users get by id");
         return userService.getById(id);
     }
 
     @PostMapping
-    @ResponseBody
     public User post(@RequestBody User user) {
         log.info("/users post");
         return userService.add(user);
     }
 
     @PutMapping
-    @ResponseBody
     public User put(@RequestBody User user) {
         log.info("/users patch");
         return userService.update(user);
@@ -61,14 +57,12 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends")
-    @ResponseBody
     public List<User> getFriends(@PathVariable Long id) {
         log.info("/users get friends");
         return userService.getFriends(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    @ResponseBody
     public Set<User> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) {
         log.info("/users get common friends");
         return userService.findCommonFriends(id, otherId);

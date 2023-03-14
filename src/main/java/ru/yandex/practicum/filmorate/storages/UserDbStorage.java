@@ -24,7 +24,7 @@ import java.util.TreeSet;
 
 @Slf4j
 @Primary
-@Component("UserDbStorage")
+@Component
 @AllArgsConstructor
 public class UserDbStorage implements UserStorage {
 
@@ -39,8 +39,8 @@ public class UserDbStorage implements UserStorage {
             user.setLogin(rs.getString("login"));
             user.setName(rs.getString("name"));
             user.setBirthday(rs.getDate("birthday").toLocalDate());
-            user.setFriends(new TreeSet<Long>(jdbcTemplate.queryForList("SELECT friendId FROM FRIENDS WHERE userId=?",
-                    new Object[]{user.getId()}, Long.class)));
+            user.setFriends(new TreeSet<Long>(jdbcTemplate.queryForList("SELECT friendId FROM FRIENDS WHERE userId=?", new Object[]{user.getId()},
+                    Long.class)));
             return user;
         }
     };
@@ -53,7 +53,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public User findById(Long id) {
         try {
-            return jdbcTemplate.queryForObject("SELECT * FROM USERS WHERE id=?", new Object[]{id}, rowMapper);
+            return jdbcTemplate.queryForObject("SELECT * FROM USERS WHERE id=?", rowMapper, new Object[]{id});
         } catch (DataAccessException e) {
             throw new NotFoundException("User not found");
         }
