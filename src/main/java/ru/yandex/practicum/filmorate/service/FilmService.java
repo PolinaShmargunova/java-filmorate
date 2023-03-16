@@ -75,6 +75,11 @@ public class FilmService {
             log.error("Дата релиза должна быть не раньше 28 декабря 1895 года");
             throw new ValidationException("Дата релиза должна быть не раньше 28 декабря 1895 года");
         }
+        if (film.getGenres() == null) {
+            log.error("Список жанров не может быть пустым");
+            throw new ValidationException("Список жанров не может быть пустым");
+        }
+
         if (film.getDuration() != null && film.getDuration() < 0) {
             log.error("Продолжительность фильма должна быть положительной");
             throw new ValidationException("Продолжительность фильма должна быть положительной");

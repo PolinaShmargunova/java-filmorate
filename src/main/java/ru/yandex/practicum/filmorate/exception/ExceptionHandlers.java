@@ -28,4 +28,5 @@ public class ExceptionHandlers {
     public ResponseEntity<Map<String, String>> otherExceptionHandler(final Exception e) {
         return new ResponseEntity<>(Map.of("error: ", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
 }
