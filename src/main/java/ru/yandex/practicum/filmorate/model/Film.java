@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
 
+import javax.validation.Valid;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
@@ -27,5 +28,6 @@ public class Film {
     @NotBlank
     private Mpa mpa;
     @NotBlank
+    @Valid
     private Set<Genre> genres = new HashSet<>();
 }
